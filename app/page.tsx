@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function SimpleHomePage() {
   return (
     <div className="min-h-screen bg-white">
@@ -12,7 +14,7 @@ export default function SimpleHomePage() {
             منصة رواسي لمواد البناء
           </h2>
           <p className="text-xl text-gray-600">
-            اكتشف أفضل مواد البناء من موردين موثوقين في الشرق الأوسط
+            اكتشف أفضل مواد البنا�� من موردين موثوقين في الشرق الأوسط
           </p>
         </section>
 
@@ -33,23 +35,22 @@ export default function SimpleHomePage() {
 
         <div className="mt-12 text-center">
           <p className="text-gray-500 mb-4">
-            Basic page is working! Let's test the complex components.
+            Basic page is working! Now let's add the full components.
           </p>
-          <button
-            onClick={() => (window.location.href = "/test")}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 mr-4"
-          >
-            Test Page
-          </button>
-          <button
-            onClick={() => {
-              // Reload with full components
-              window.location.href = "/?full=true";
-            }}
-            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
-          >
-            Load Full Site
-          </button>
+          <div className="space-x-4 space-x-reverse">
+            <Link
+              href="/test"
+              className="inline-block bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600"
+            >
+              Test Page
+            </Link>
+            <Link
+              href="/categories"
+              className="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
+            >
+              View Categories
+            </Link>
+          </div>
         </div>
       </main>
     </div>
