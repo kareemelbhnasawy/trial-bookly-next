@@ -59,7 +59,7 @@ export default function CartPage() {
                 سلة التسوق فارغة
               </h1>
               <p className="text-gray-600 mb-8">
-                لم تقم بإضافة أي منتجات إلى سلة التسوق بعد
+                لم تقم بإضاف�� أي منتجات إلى سلة التسوق بعد
               </p>
               <Link href="/categories">
                 <Button size="lg">تصفح المنتجات</Button>
@@ -268,13 +268,13 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex justify-between">
-                      <span>ضريبة القيمة المضافة (15%)</span>
+                      <span>ضريبة القيمة المضافة (14%)</span>
                       <span>{formatPrice(tax)}</span>
                     </div>
 
-                    {subtotal < 5000 && (
+                    {subtotal < 2000 && (
                       <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded-md">
-                        أضف {formatPrice(5000 - subtotal)} للحصول على توصيل
+                        أضف {formatPrice(2000 - subtotal)} للحصول على توصيل
                         مجاني
                       </div>
                     )}
