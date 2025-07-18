@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
     const checked = "checked" in e.target ? e.target.checked : false;
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
         tax,
         total,
         estimatedDelivery: new Date(
-          Date.now() + 3 * 24 * 60 * 60 * 1000,
+          Date.now() + 3 * 24 * 60 * 60 * 1000
         ).toISOString(),
         shippingAddress: {
           fullName: formData.fullName,

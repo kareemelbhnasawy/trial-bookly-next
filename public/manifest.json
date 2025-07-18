@@ -1,0 +1,21 @@
+{
+  "name": "Rawasy - Construction Materials Marketplace",
+  "short_name": "Rawasy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0ea5e9",
+  "theme_color": "#0ea5e9",
+  "description": "منصة مواد البناء الشاملة في الشرق الأوسط.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

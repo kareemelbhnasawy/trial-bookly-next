@@ -226,7 +226,9 @@ export default function SupplierDashboard() {
                                 طلب #{order.orderNumber}
                               </h4>
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                  order.status,
+                                )}`}
                               >
                                 {getStatusLabel(order.status)}
                               </span>
