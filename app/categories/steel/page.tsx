@@ -23,159 +23,18 @@ import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/stores/cartStore";
 import { getProductsByCategory } from "@/lib/sampleProducts";
 
-// Sample product data
-const products = [
-  {
-    id: "1",
-    name: "حديد تسليح 16 مم",
-    nameEn: "Rebar 16mm",
-    price: 2850,
-    originalPrice: 3000,
-    unit: "طن",
-    minOrder: 1,
-    rating: 4.8,
-    reviewCount: 124,
-    inStock: true,
-    stockQuantity: 500,
-    image: "/products/rebar-16mm.jpg",
-    supplier: {
-      name: "شركة الخليج للحديد",
-      location: "الرياض",
-      verified: true,
-    },
-    specifications: {
-      grade: "الدرجة 60",
-      standard: "ASTM A615",
-      length: "12 متر",
-    },
-    features: ["مقاوم للصدأ", "جودة عالية", "توصيل سريع"],
-  },
-  {
-    id: "2",
-    name: "حديد تسليح 12 مم",
-    nameEn: "Rebar 12mm",
-    price: 2750,
-    originalPrice: null,
-    unit: "طن",
-    minOrder: 1,
-    rating: 4.7,
-    reviewCount: 89,
-    inStock: true,
-    stockQuantity: 300,
-    image: "/products/rebar-12mm.jpg",
-    supplier: {
-      name: "مؤسسة الحديد المتطور",
-      location: "دبي",
-      verified: true,
-    },
-    specifications: {
-      grade: "الدرجة 60",
-      standard: "ASTM A615",
-      length: "12 متر",
-    },
-    features: ["مطابق للمواصفات", "سعر تنافسي", "ضمان الجودة"],
-  },
-  {
-    id: "3",
-    name: "أنابيب معدنية مجلفنة 4 بوصة",
-    nameEn: "Galvanized Steel Pipes 4 inch",
-    price: 45,
-    originalPrice: 50,
-    unit: "متر",
-    minOrder: 50,
-    rating: 4.9,
-    reviewCount: 67,
-    inStock: true,
-    stockQuantity: 1000,
-    image: "/products/galvanized-pipes.jpg",
-    supplier: {
-      name: "شركة الأنابيب الذهبية",
-      location: "الدمام",
-      verified: true,
-    },
-    specifications: {
-      grade: "مجلفن حار",
-      standard: "BS 1387",
-      thickness: "3.2 مم",
-    },
-    features: ["مقاوم للتآكل", "عمر طويل", "سهولة التركيب"],
-  },
-  {
-    id: "4",
-    name: "ألواح معدنية مموجة",
-    nameEn: "Corrugated Metal Sheets",
-    price: 85,
-    originalPrice: null,
-    unit: "متر مربع",
-    minOrder: 100,
-    rating: 4.6,
-    reviewCount: 45,
-    inStock: true,
-    stockQuantity: 2000,
-    image: "/products/corrugated-sheets.jpg",
-    supplier: {
-      name: "مصنع الألواح المعدنية",
-      location: "جدة",
-      verified: true,
-    },
-    specifications: {
-      grade: "مجلفن",
-      thickness: "0.5 مم",
-      width: "1 متر",
-    },
-    features: ["خفيف الوزن", "مقاوم للطقس", "تركيب سهل"],
-  },
-  {
-    id: "5",
-    name: "كمرات معدنية H-Beam",
-    nameEn: "H-Beam Steel",
-    price: 3200,
-    originalPrice: 3400,
-    unit: "طن",
-    minOrder: 2,
-    rating: 4.8,
-    reviewCount: 33,
-    inStock: true,
-    stockQuantity: 150,
-    image: "/products/h-beam.jpg",
-    supplier: {
-      name: "شركة الهياكل المعدنية",
-      location: "الرياض",
-      verified: true,
-    },
-    specifications: {
-      grade: "S355",
-      standard: "EN 10025",
-      size: "200x200 مم",
-    },
-    features: ["قوة تحمل عالية", "للهياكل الكبيرة", "جودة أوروبية"],
-  },
-  {
-    id: "6",
-    name: "سلك شائك مجلفن",
-    nameEn: "Galvanized Barbed Wire",
-    price: 12,
-    originalPrice: null,
-    unit: "متر",
-    minOrder: 500,
-    rating: 4.4,
-    reviewCount: 78,
-    inStock: true,
-    stockQuantity: 5000,
-    image: "/products/barbed-wire.jpg",
-    supplier: {
-      name: "مصنع الأسلاك المعدنية",
-      location: "الدمام",
-      verified: true,
-    },
-    specifications: {
-      grade: "مجلفن",
-      diameter: "2.5 مم",
-      spacing: "10 سم",
-    },
-    features: ["مقاوم للصدأ", "حماية فعالة", "سعر اقتصادي"],
-  },
-];
+// Get steel products from sample data
+const steelProducts = getProductsByCategory("steel");
+
+// Transform sample products to match the expected interface
+const products = steelProducts.map((product) => ({
+  ...product,
+  rating: 4.8,
+  reviewCount: 124,
+  inStock: true,
+  stockQuantity: 500,
+  features: ["جودة عالية", "توصيل سريع", "ضمان الجودة"],
+}));
 
 const filters = {
   priceRanges: [
@@ -188,7 +47,7 @@ const filters = {
   suppliers: [
     "شركة الخليج للحديد",
     "مؤسسة الحديد المتطور",
-    "شركة الأنابيب ��لذهبية",
+    "شركة الأنابيب الذهبية",
     "مصنع الألواح المعدنية",
   ],
   ratings: [5, 4, 3, 2, 1],
@@ -433,7 +292,7 @@ export default function SteelCategoryPage() {
                   className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="popular">الأكثر شيوعاً</option>
-                  <option value="price-low">السعر: من الأقل للأعلى</option>
+                  <option value="price-low">السعر: من الأقل للأ��لى</option>
                   <option value="price-high">السعر: من الأعلى للأقل</option>
                   <option value="rating">التقييم</option>
                   <option value="newest">الأحدث</option>
@@ -496,7 +355,7 @@ export default function SteelCategoryPage() {
 
                 {/* Rating */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3">التقييم</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">الت��ييم</h4>
                   <div className="space-y-2">
                     {filters.ratings.map((rating) => (
                       <label key={rating} className="flex items-center">
