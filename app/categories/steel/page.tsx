@@ -225,7 +225,11 @@ export default function SteelCategoryPage() {
               size="sm"
             >
               <ShoppingCart className="h-4 w-4 ml-2" />
-              {product.inStock ? "أضف للسلة" : "غير متوفر"}
+              {!product.inStock
+                ? "غير متوفر"
+                : getItemCount(product.id) > 0
+                  ? "أضف المزيد"
+                  : "أضف للسلة"}
             </Button>
           </div>
         </div>
