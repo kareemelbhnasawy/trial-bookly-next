@@ -181,6 +181,9 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Featured Products Section */}
+        <FeaturedProducts />
+
         {/* Statistics Section */}
         <section className="py-16 construction-gradient text-white">
           <div className="container mx-auto px-4">
@@ -227,7 +230,7 @@ export default function HomePage() {
                   موردون موثوقون
                 </h3>
                 <p className="text-gray-600">
-                  جميع الموردين مُتحققٌ منهم ومُرخصون لضمان أعلى مستويات الجودة
+                  جميع الموردين مُت��ققٌ منهم ومُرخصون لضمان أعلى مستويات الجودة
                 </p>
               </div>
 
