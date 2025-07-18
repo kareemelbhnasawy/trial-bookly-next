@@ -1,3 +1,7 @@
+const createNextIntlPlugin = require("next-intl/plugin");
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -6,11 +10,7 @@ const nextConfig = {
   images: {
     domains: ["localhost", "images.unsplash.com", "cdn.rawasy.com"],
   },
-  i18n: {
-    locales: ["ar", "en"],
-    defaultLocale: "ar",
-    localeDetection: true,
-  },
+  // Remove the old i18n config since we're using next-intl with app router
 };
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);
