@@ -112,9 +112,9 @@ interface PaymentStore {
 // Sample payment gateways for Middle East
 const defaultGateways: PaymentGateway[] = [
   {
-    id: "mada",
-    name: "mada",
-    nameAr: "مدى",
+    id: "meeza",
+    name: "Meeza",
+    nameAr: "ميزة",
     type: "card",
     isEnabled: true,
     supportedCurrencies: ["EGP"],
