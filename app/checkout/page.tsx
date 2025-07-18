@@ -213,7 +213,7 @@ export default function CheckoutPage() {
 
   const renderStep1 = () => (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">معلومات الشحن</h2>
+      <h2 className="text-xl font-semibold text-gray-900">معل��مات الشحن</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -287,11 +287,13 @@ export default function CheckoutPage() {
             required
           >
             <option value="">اختر المدينة</option>
-            <option value="riyadh">الرياض</option>
-            <option value="jeddah">جدة</option>
-            <option value="dammam">الدمام</option>
-            <option value="mecca">مكة المكرمة</option>
-            <option value="medina">المدينة المنورة</option>
+            <option value="cairo">القاهرة</option>
+            <option value="alexandria">الإسكندرية</option>
+            <option value="giza">الجيزة</option>
+            <option value="port-said">بورسعيد</option>
+            <option value="suez">السويس</option>
+            <option value="luxor">الأقصر</option>
+            <option value="aswan">أسوان</option>
           </select>
         </div>
 
