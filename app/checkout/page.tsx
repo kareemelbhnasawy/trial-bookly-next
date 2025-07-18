@@ -213,7 +213,7 @@ export default function CheckoutPage() {
 
   const renderStep1 = () => (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">معل��مات الشحن</h2>
+      <h2 className="text-xl font-semibold text-gray-900">معلومات الشحن</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -308,10 +308,17 @@ export default function CheckoutPage() {
             className="w-full p-3 border border-gray-300 rounded-md text-right"
             required
           >
-            <option value="">اختر المنطقة</option>
-            <option value="riyadh-region">منطقة الرياض</option>
-            <option value="mecca-region">منطقة مكة المكرمة</option>
-            <option value="eastern-region">المنطقة الشرقية</option>
+            <option value="">اختر المحافظة</option>
+            <option value="cairo-gov">محافظة القاهرة</option>
+            <option value="alexandria-gov">محافظة الإسكندرية</option>
+            <option value="giza-gov">محافظة الجيزة</option>
+            <option value="qalyubia-gov">محافظة القليوبية</option>
+            <option value="port-said-gov">محافظة بورسعيد</option>
+            <option value="suez-gov">محافظة السويس</option>
+            <option value="dakahlia-gov">محافظة الدقهلية</option>
+            <option value="sharqia-gov">محافظة الشرقية</option>
+            <option value="gharbia-gov">محافظة الغربية</option>
+            <option value="menoufia-gov">محافظة المنوفية</option>
           </select>
         </div>
 
