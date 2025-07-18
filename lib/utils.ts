@@ -16,7 +16,7 @@ export function formatPrice(price: number, currency: string = "EGP"): string {
 }
 
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat("ar-SA").format(num);
+  return new Intl.NumberFormat("ar-EG").format(num);
 }
 
 // Date formatting
