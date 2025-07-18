@@ -22,7 +22,7 @@ export function formatNumber(num: number): string {
 // Date formatting
 export function formatDate(date: Date | string): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("ar-SA", {
+  return new Intl.DateTimeFormat("ar-EG", {
     year: "numeric",
     month: "long",
     day: "numeric",
