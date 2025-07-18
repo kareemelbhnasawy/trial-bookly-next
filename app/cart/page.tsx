@@ -31,9 +31,9 @@ export default function CartPage() {
   const [isPromoApplied, setIsPromoApplied] = useState(false);
 
   const subtotal = getTotalPrice();
-  const deliveryFee = subtotal > 5000 ? 0 : 150; // Free delivery over 5000 SAR
+  const deliveryFee = subtotal > 2000 ? 0 : 50; // Free delivery over 2000 EGP
   const discount = isPromoApplied ? subtotal * 0.1 : 0; // 10% discount with promo
-  const tax = (subtotal - discount) * 0.15; // 15% VAT
+  const tax = (subtotal - discount) * 0.14; // 14% VAT (Egypt rate)
   const total = subtotal + deliveryFee - discount + tax;
 
   const applyPromoCode = () => {
