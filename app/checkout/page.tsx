@@ -74,9 +74,9 @@ export default function CheckoutPage() {
   });
 
   const subtotal = getTotalPrice();
-  const deliveryFee = subtotal > 5000 ? 0 : 150;
+  const deliveryFee = subtotal > 2000 ? 0 : 50;
   const paymentFees = calculateFees(subtotal, formData.paymentMethod as any);
-  const tax = (subtotal + deliveryFee + paymentFees) * 0.15;
+  const tax = (subtotal + deliveryFee + paymentFees) * 0.14;
   const total = subtotal + deliveryFee + paymentFees + tax;
 
   const enabledGateways = availableGateways.filter((g) => g.isEnabled);
@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value, type } = e.target;
     const checked = "checked" in e.target ? e.target.checked : false;
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
         tax,
         total,
         estimatedDelivery: new Date(
-          Date.now() + 3 * 24 * 60 * 60 * 1000
+          Date.now() + 3 * 24 * 60 * 60 * 1000,
         ).toISOString(),
         shippingAddress: {
           fullName: formData.fullName,
@@ -336,7 +336,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            ��لتاريخ المفضل للتوصيل
+            ��لتاريخ الم��ضل للتوصيل
           </label>
           <Input
             name="deliveryDate"
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
           name="specialInstructions"
           value={formData.specialInstructions}
           onChange={handleInputChange}
-          placeholder="مثال: التوصيل إلى الباب الخلفي، الاتصال قبل الوصول بـ 30 دقيقة..."
+          placeholder="مثال: ��لتوصيل إلى الباب الخلفي، الاتصال قبل الوصول بـ 30 دقيقة..."
           className="w-full p-3 border border-gray-300 rounded-md text-right resize-none"
           rows={3}
         />
@@ -685,7 +685,7 @@ export default function CheckoutPage() {
           {/* Breadcrumb */}
           <nav className="text-sm mb-8">
             <Link href="/" className="text-gray-500 hover:text-gray-700">
-              الرئيسية
+              الرئي��ية
             </Link>
             <span className="mx-2 text-gray-400">/</span>
             <Link href="/cart" className="text-gray-500 hover:text-gray-700">
