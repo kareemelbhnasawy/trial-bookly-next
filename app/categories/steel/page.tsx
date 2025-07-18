@@ -54,6 +54,7 @@ const filters = {
 };
 
 export default function SteelCategoryPage() {
+  const { addItem, getItemCount } = useCartStore();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("popular");
   const [showFilters, setShowFilters] = useState(false);
@@ -65,8 +66,11 @@ export default function SteelCategoryPage() {
   });
 
   const handleAddToCart = (productId: string) => {
-    // Add to cart logic
-    console.log("Added to cart:", productId);
+    const product = steelProducts.find((p) => p.id === productId);
+    if (product) {
+      addItem(product, product.minOrder);
+      console.log("Added to cart:", product.name);
+    }
   };
 
   const handleAddToWishlist = (productId: string) => {
@@ -292,7 +296,7 @@ export default function SteelCategoryPage() {
                   className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="popular">الأكثر شيوعاً</option>
-                  <option value="price-low">السعر: من الأقل للأ��لى</option>
+                  <option value="price-low">السعر: من الأقل للأعلى</option>
                   <option value="price-high">السعر: من الأعلى للأقل</option>
                   <option value="rating">التقييم</option>
                   <option value="newest">الأحدث</option>
@@ -355,7 +359,7 @@ export default function SteelCategoryPage() {
 
                 {/* Rating */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3">الت��ييم</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">التقييم</h4>
                   <div className="space-y-2">
                     {filters.ratings.map((rating) => (
                       <label key={rating} className="flex items-center">
