@@ -15,6 +15,8 @@ import {
   Shield,
   ArrowLeft,
   Check,
+  AlertCircle,
+  Smartphone,
 } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -23,15 +25,25 @@ import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useCartStore } from "@/stores/cartStore";
 import { useOrderStore } from "@/stores/orderStore";
+import { usePaymentStore } from "@/stores/paymentStore";
 import { formatPrice } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice, clearCart } = useCartStore();
   const { createOrder } = useOrderStore();
+  const {
+    availableGateways,
+    savedCards,
+    getDefaultCard,
+    processPayment,
+    calculateFees,
+  } = usePaymentStore();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+
   const [formData, setFormData] = useState({
     // Shipping info
     fullName: "",
@@ -49,26 +61,50 @@ export default function CheckoutPage() {
 
     // Payment
     paymentMethod: "card",
+    selectedCardId: "",
 
-    // Card details (for demo)
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    cardName: "",
+    // New card details (if adding new card)
+    newCard: {
+      cardNumber: "",
+      expiryDate: "",
+      cvv: "",
+      cardName: "",
+      saveCard: false,
+    },
   });
 
   const subtotal = getTotalPrice();
   const deliveryFee = subtotal > 5000 ? 0 : 150;
-  const tax = subtotal * 0.15;
-  const total = subtotal + deliveryFee + tax;
+  const paymentFees = calculateFees(subtotal, formData.paymentMethod as any);
+  const tax = (subtotal + deliveryFee + paymentFees) * 0.15;
+  const total = subtotal + deliveryFee + paymentFees + tax;
+
+  const enabledGateways = availableGateways.filter((g) => g.isEnabled);
+  const defaultCard = getDefaultCard();
 
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    const checked = "checked" in e.target ? e.target.checked : false;
+
+    if (name.startsWith("newCard.")) {
+      const fieldName = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        newCard: {
+          ...prev.newCard,
+          [fieldName]: type === "checkbox" ? checked : value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   const handleNext = () => {
@@ -85,49 +121,94 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsLoading(true);
+    setPaymentProcessing(true);
 
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Create order first
+      const orderId = createOrder({
+        status: "pending",
+        items: items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          nameEn: item.nameEn,
+          price: item.price,
+          quantity: item.quantity,
+          unit: item.unit,
+          supplier: item.supplier,
+          specifications: item.specifications,
+        })),
+        subtotal,
+        discount: 0,
+        deliveryFee,
+        tax,
+        total,
+        estimatedDelivery: new Date(
+          Date.now() + 3 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        shippingAddress: {
+          fullName: formData.fullName,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          region: formData.region,
+          postalCode: formData.postalCode,
+        },
+        paymentMethod: formData.paymentMethod,
+        notes: formData.specialInstructions,
+      });
 
-    // Create order
-    const orderId = createOrder({
-      status: "pending",
-      items: items.map((item) => ({
-        id: item.id,
-        name: item.name,
-        nameEn: item.nameEn,
-        price: item.price,
-        quantity: item.quantity,
-        unit: item.unit,
-        supplier: item.supplier,
-        specifications: item.specifications,
-      })),
-      subtotal,
-      discount: 0,
-      deliveryFee,
-      tax,
-      total,
-      estimatedDelivery: new Date(
-        Date.now() + 3 * 24 * 60 * 60 * 1000,
-      ).toISOString(), // 3 days from now
-      shippingAddress: {
-        fullName: formData.fullName,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        region: formData.region,
-        postalCode: formData.postalCode,
-      },
-      paymentMethod: formData.paymentMethod,
-      notes: formData.specialInstructions,
-    });
+      // Process payment if not COD
+      if (formData.paymentMethod !== "cod") {
+        const paymentResult = await processPayment({
+          orderId,
+          amount: total,
+          currency: "SAR",
+          method: formData.paymentMethod as any,
+          paymentDetails:
+            formData.paymentMethod === "card"
+              ? {
+                  cardId: formData.selectedCardId || "new",
+                  ...formData.newCard,
+                }
+              : {},
+        });
 
-    // Clear cart
-    clearCart();
+        if (paymentResult.status === "failed") {
+          throw new Error(paymentResult.failureReason || "Payment failed");
+        }
+      }
 
-    // Redirect to order confirmation
-    router.push(`/orders/${orderId}?success=true`);
-    setIsLoading(false);
+      // Clear cart on success
+      clearCart();
+
+      // Redirect to order confirmation
+      router.push(`/orders/${orderId}?success=true`);
+    } catch (error) {
+      console.error("Order placement failed:", error);
+      alert("حدث خطأ أثناء معالجة الطلب. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setIsLoading(false);
+      setPaymentProcessing(false);
+    }
+  };
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || "";
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    return parts.length ? parts.join(" ") : v;
+  };
+
+  const formatExpiryDate = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    if (v.length >= 2) {
+      return v.substring(0, 2) + "/" + v.substring(2, 4);
+    }
+    return v;
   };
 
   const renderStep1 = () => (
@@ -255,7 +336,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            التاريخ المفضل للتوصيل
+            ��لتاريخ المفضل للتوصيل
           </label>
           <Input
             name="deliveryDate"
@@ -349,120 +430,207 @@ export default function CheckoutPage() {
 
       {/* Payment Methods */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="flex items-center">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="card"
-              checked={formData.paymentMethod === "card"}
-              onChange={handleInputChange}
-              className="h-4 w-4 text-rawasy-600 ml-3"
-            />
-            <CreditCard className="h-5 w-5 text-gray-600 ml-2" />
-            <span>بطاقة ائتمانية / خصم</span>
+        {enabledGateways.map((gateway) => (
+          <div
+            key={gateway.id}
+            className="flex items-center justify-between p-4 border rounded-lg"
+          >
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={gateway.type}
+                checked={formData.paymentMethod === gateway.type}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-rawasy-600 ml-3"
+              />
+              <div className="flex items-center">
+                {gateway.type === "card" && (
+                  <CreditCard className="h-5 w-5 text-gray-600 ml-2" />
+                )}
+                {gateway.type === "bank_transfer" && (
+                  <Building className="h-5 w-5 text-gray-600 ml-2" />
+                )}
+                {gateway.type === "cod" && (
+                  <Truck className="h-5 w-5 text-gray-600 ml-2" />
+                )}
+                {gateway.type === "stc_pay" && (
+                  <Smartphone className="h-5 w-5 text-gray-600 ml-2" />
+                )}
+                {gateway.type === "apple_pay" && (
+                  <Smartphone className="h-5 w-5 text-gray-600 ml-2" />
+                )}
+                <span>{gateway.nameAr}</span>
+              </div>
+            </div>
+            <div className="text-left">
+              {gateway.fees.percentage > 0 && (
+                <div className="text-sm text-gray-500">
+                  رسوم: {gateway.fees.percentage}%
+                  {gateway.fees.fixed > 0 &&
+                    ` + ${formatPrice(gateway.fees.fixed)}`}
+                </div>
+              )}
+              {gateway.fees.fixed > 0 && gateway.fees.percentage === 0 && (
+                <div className="text-sm text-gray-500">
+                  رسوم: {formatPrice(gateway.fees.fixed)}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex space-x-2 space-x-reverse">
-            <img src="/visa.png" alt="Visa" className="h-6" />
-            <img src="/mastercard.png" alt="Mastercard" className="h-6" />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="flex items-center">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="bank"
-              checked={formData.paymentMethod === "bank"}
-              onChange={handleInputChange}
-              className="h-4 w-4 text-rawasy-600 ml-3"
-            />
-            <Building className="h-5 w-5 text-gray-600 ml-2" />
-            <span>تحويل بنكي</span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="flex items-center">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="cod"
-              checked={formData.paymentMethod === "cod"}
-              onChange={handleInputChange}
-              className="h-4 w-4 text-rawasy-600 ml-3"
-            />
-            <Truck className="h-5 w-5 text-gray-600 ml-2" />
-            <span>الدفع عند الاستلام</span>
-          </div>
-          <span className="text-sm text-gray-500">رسوم إضافية 25 ريال</span>
-        </div>
+        ))}
       </div>
 
-      {/* Card Details */}
+      {/* Card Selection/Input */}
       {formData.paymentMethod === "card" && (
         <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
           <h3 className="font-medium text-gray-900">تفاصيل البطاقة</h3>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              رقم البطاقة *
-            </label>
-            <Input
-              name="cardNumber"
-              value={formData.cardNumber}
-              onChange={handleInputChange}
-              placeholder="1234 5678 9012 3456"
-              className="text-left"
-              required
-            />
-          </div>
+          {/* Saved Cards */}
+          {savedCards.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-gray-700">
+                البطاقات المحفوظة
+              </h4>
+              {savedCards.map((card) => (
+                <div
+                  key={card.id}
+                  className="flex items-center p-3 border rounded-md bg-white"
+                >
+                  <input
+                    type="radio"
+                    name="selectedCardId"
+                    value={card.id}
+                    checked={formData.selectedCardId === card.id}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-rawasy-600 ml-3"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium">
+                      •••• •••• •••• {card.last4}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {card.brand} •{" "}
+                      {card.expiryMonth.toString().padStart(2, "0")}/
+                      {card.expiryYear.toString().slice(-2)}
+                    </div>
+                  </div>
+                  {card.isDefault && (
+                    <span className="text-xs bg-rawasy-100 text-rawasy-800 px-2 py-1 rounded-full">
+                      افتراضي
+                    </span>
+                  )}
+                </div>
+              ))}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                تاريخ الانتهاء *
-              </label>
-              <Input
-                name="expiryDate"
-                value={formData.expiryDate}
-                onChange={handleInputChange}
-                placeholder="MM/YY"
-                className="text-left"
-                required
-              />
+              <div className="flex items-center p-3 border rounded-md bg-white">
+                <input
+                  type="radio"
+                  name="selectedCardId"
+                  value=""
+                  checked={formData.selectedCardId === ""}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-rawasy-600 ml-3"
+                />
+                <span className="font-medium">استخدام بطاقة جديدة</span>
+              </div>
             </div>
+          )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                CVV *
-              </label>
-              <Input
-                name="cvv"
-                value={formData.cvv}
-                onChange={handleInputChange}
-                placeholder="123"
-                className="text-left"
-                maxLength={3}
-                required
-              />
+          {/* New Card Form */}
+          {(savedCards.length === 0 || formData.selectedCardId === "") && (
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-gray-700">
+                {savedCards.length > 0 ? "بطاقة جديدة" : "تفاصيل البطاقة"}
+              </h4>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رقم البطاقة *
+                </label>
+                <Input
+                  name="newCard.cardNumber"
+                  value={formData.newCard.cardNumber}
+                  onChange={(e) => {
+                    const formatted = formatCardNumber(e.target.value);
+                    handleInputChange({
+                      ...e,
+                      target: { ...e.target, value: formatted },
+                    } as any);
+                  }}
+                  placeholder="1234 5678 9012 3456"
+                  className="text-left"
+                  maxLength={19}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    تاريخ الانتهاء *
+                  </label>
+                  <Input
+                    name="newCard.expiryDate"
+                    value={formData.newCard.expiryDate}
+                    onChange={(e) => {
+                      const formatted = formatExpiryDate(e.target.value);
+                      handleInputChange({
+                        ...e,
+                        target: { ...e.target, value: formatted },
+                      } as any);
+                    }}
+                    placeholder="MM/YY"
+                    className="text-left"
+                    maxLength={5}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CVV *
+                  </label>
+                  <Input
+                    name="newCard.cvv"
+                    value={formData.newCard.cvv}
+                    onChange={handleInputChange}
+                    placeholder="123"
+                    className="text-left"
+                    maxLength={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  اسم حامل البطاقة *
+                </label>
+                <Input
+                  name="newCard.cardName"
+                  value={formData.newCard.cardName}
+                  onChange={handleInputChange}
+                  placeholder="AHMED MOHAMMED ALALI"
+                  className="text-left"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="newCard.saveCard"
+                  checked={formData.newCard.saveCard}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-rawasy-600 ml-2"
+                />
+                <label className="text-sm text-gray-700">
+                  حفظ البطاقة للاستخدام المستقبلي
+                </label>
+              </div>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              اسم حامل البطاقة *
-            </label>
-            <Input
-              name="cardName"
-              value={formData.cardName}
-              onChange={handleInputChange}
-              placeholder="AHMED MOHAMMED ALALI"
-              className="text-left"
-              required
-            />
-          </div>
+          )}
         </div>
       )}
 
@@ -473,6 +641,16 @@ export default function CheckoutPage() {
           جميع المعاملات مشفرة ومؤمنة بتقنية SSL
         </span>
       </div>
+
+      {/* Payment Processing Notice */}
+      {paymentProcessing && (
+        <div className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <AlertCircle className="h-5 w-5 text-blue-600 ml-2 animate-spin" />
+          <span className="text-sm text-blue-800">
+            جاري معالجة الدفع... يرجى عدم إغلاق الصفحة
+          </span>
+        </div>
+      )}
     </div>
   );
 
@@ -555,7 +733,11 @@ export default function CheckoutPage() {
                   {/* Navigation Buttons */}
                   <div className="flex justify-between mt-8 pt-6 border-t">
                     {currentStep > 1 ? (
-                      <Button variant="outline" onClick={handleBack}>
+                      <Button
+                        variant="outline"
+                        onClick={handleBack}
+                        disabled={isLoading}
+                      >
                         <ArrowLeft className="h-4 w-4 ml-2" />
                         السابق
                       </Button>
@@ -626,6 +808,13 @@ export default function CheckoutPage() {
                         {deliveryFee === 0 ? "مجاني" : formatPrice(deliveryFee)}
                       </span>
                     </div>
+
+                    {paymentFees > 0 && (
+                      <div className="flex justify-between">
+                        <span>رسوم الدفع</span>
+                        <span>{formatPrice(paymentFees)}</span>
+                      </div>
+                    )}
 
                     <div className="flex justify-between">
                       <span>ضريبة القيمة المضافة</span>
