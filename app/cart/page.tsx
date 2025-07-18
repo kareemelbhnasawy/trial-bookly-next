@@ -85,7 +85,7 @@ export default function CartPage() {
               سلة التسوق
             </h1>
             <p className="text-gray-600">
-              {getTotalItems()} منتج في سلة التسوق
+              {getTotalItems()} م��تج في سلة التسوق
             </p>
           </div>
 
@@ -315,7 +315,7 @@ export default function CartPage() {
                       التوصيل خلال 2-4 أيام عمل
                     </p>
                     <p className="text-sm text-gray-600">
-                      توصيل مجاني للطلبات أكثر من 5000 ريال
+                      توصيل مجاني للطلبات أكثر من 2000 جنيه
                     </p>
                   </div>
                 </CardContent>
