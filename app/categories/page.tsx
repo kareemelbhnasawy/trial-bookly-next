@@ -202,15 +202,17 @@ export default function CategoriesPage() {
               المناسبة لمشروعك
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact">
-                <button className="bg-white text-rawasy-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors">
-                  تواصل معنا
-                </button>
+              <Link
+                href="/contact"
+                className="bg-white text-rawasy-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors inline-block"
+              >
+                تواصل معنا
               </Link>
-              <Link href="/request-quote">
-                <button className="border-2 border-white text-white hover:bg-white hover:text-rawasy-600 px-8 py-3 rounded-lg font-semibold transition-colors">
-                  طلب عرض سعر
-                </button>
+              <Link
+                href="/request-quote"
+                className="border-2 border-white text-white hover:bg-white hover:text-rawasy-600 px-8 py-3 rounded-lg font-semibold transition-colors inline-block"
+              >
+                طلب عرض سعر
               </Link>
             </div>
           </div>
