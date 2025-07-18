@@ -1,65 +1,25 @@
-import createMiddleware from "next-intl/middleware";
-import { locales } from "./lib/i18n";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default createMiddleware({
-  // A list of all locales that are supported
-  locales,
+export function middleware(request: NextRequest) {
+  // Simple middleware without complex i18n routing
+  // We'll handle language switching at the component level
 
-  // Used when no locale matches
-  defaultLocale: "ar",
+  const pathname = request.nextUrl.pathname;
 
-  // Always use a locale prefix
-  localePrefix: "always",
+  // Skip middleware for static files and API routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
 
-  // Redirect to default locale when no locale is specified
-  localeDetection: true,
-
-  // Custom path matching
-  pathnames: {
-    "/": "/",
-    "/categories": {
-      ar: "/categories",
-      en: "/categories",
-    },
-    "/cart": {
-      ar: "/cart",
-      en: "/cart",
-    },
-    "/checkout": {
-      ar: "/checkout",
-      en: "/checkout",
-    },
-    "/orders": {
-      ar: "/orders",
-      en: "/orders",
-    },
-    "/login": {
-      ar: "/login",
-      en: "/login",
-    },
-    "/register": {
-      ar: "/register",
-      en: "/register",
-    },
-    "/supplier": {
-      ar: "/supplier",
-      en: "/supplier",
-    },
-  },
-});
+  // Continue with the request
+  return NextResponse.next();
+}
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: [
-    // Enable a redirect to a matching locale at the root
-    "/",
-
-    // Set a cookie to remember the previous locale for
-    // all requests that have a locale prefix
-    "/(ar|en)/:path*",
-
-    // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/en/pathnames`)
-    "/((?!_next|_vercel|.*\\..*).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
