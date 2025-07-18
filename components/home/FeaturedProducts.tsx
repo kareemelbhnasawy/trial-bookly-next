@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Star, Heart, Eye, Plus, Minus } from "lucide-react";
+import {
+  ShoppingCart,
+  Star,
+  Heart,
+  Eye,
+  Plus,
+  Minus,
+  ArrowLeft,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useCartStore } from "@/stores/cartStore";
