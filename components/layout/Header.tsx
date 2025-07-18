@@ -40,11 +40,11 @@ export default function Header() {
             <div className="flex items-center space-x-4 space-x-reverse">
               <div className="flex items-center text-rawasy-700">
                 <Phone className="h-4 w-4 ml-1" />
-                <span>+966 11 123 4567</span>
+                <span>+20 2 123 4567</span>
               </div>
               <div className="flex items-center text-rawasy-700">
                 <MapPin className="h-4 w-4 ml-1" />
-                <span>توصيل مجاني للطلبات أكثر من 5000 ريال</span>
+                <span>توصيل مجاني للطلبات أكثر من 2000 جنيه</span>
               </div>
             </div>
             <div className="flex items-center space-x-3 space-x-reverse">
