@@ -20,6 +20,8 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatPrice } from "@/lib/utils";
+import { useCartStore } from "@/stores/cartStore";
+import { getProductsByCategory } from "@/lib/sampleProducts";
 
 // Sample product data
 const products = [
@@ -186,7 +188,7 @@ const filters = {
   suppliers: [
     "شركة الخليج للحديد",
     "مؤسسة الحديد المتطور",
-    "شركة الأنابيب الذهبية",
+    "شركة الأنابيب ��لذهبية",
     "مصنع الألواح المعدنية",
   ],
   ratings: [5, 4, 3, 2, 1],
