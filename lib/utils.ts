@@ -42,8 +42,8 @@ export function isValidEmail(email: string): boolean {
 }
 
 export function isValidPhone(phone: string): boolean {
-  // Saudi/GCC phone number validation
-  const phoneRegex = /^(\+966|966|0)?[5-9]\d{8}$/;
+  // Egyptian phone number validation
+  const phoneRegex = /^(\+20|20|0)?(1[0125]\d{8}|[2-9]\d{7,8})$/;
   return phoneRegex.test(phone.replace(/\s/g, ""));
 }
 
