@@ -238,7 +238,7 @@ export default function CheckoutPage() {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            placeholder="+966 5X XXX XXXX"
+            placeholder="+20 1X XXX XXXX"
             className="text-right"
             required
           />
