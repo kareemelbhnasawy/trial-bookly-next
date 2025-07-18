@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Formatting utilities
-export function formatPrice(price: number, currency: string = "SAR"): string {
-  return new Intl.NumberFormat("ar-SA", {
+export function formatPrice(price: number, currency: string = "EGP"): string {
+  return new Intl.NumberFormat("ar-EG", {
     style: "currency",
     currency: currency,
     minimumFractionDigits: 0,
