@@ -18,6 +18,7 @@ import Footer from "@/components/layout/Footer";
 import CategoryCard from "@/components/home/CategoryCard";
 import FeaturedSupplier from "@/components/home/FeaturedSupplier";
 import HeroSection from "@/components/home/HeroSection";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
 
 export const metadata: Metadata = {
   title: "رواسي - منصة مواد البناء الشاملة في الشرق الأوسط",
